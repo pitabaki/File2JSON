@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content="1Ingress Website">
+	<title>1Ingress | Membership</title>
+	<link rel="shortcut icon" type="image/x-icon" href="img/favicon.jpg" sizes="16x16" />
+	<link rel="icon" type="image/x-icon" href="img/favicon.jpg" sizes="16x16" />
+	<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+
+	<!-- build:css -->
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/materialize.css">
+	<link rel="stylesheet" href="css/style.css">
+	<!-- endbuild -->
+</head>
+<body>
+
+<!-- Header/NAV 
+
+remains the same through all HTML files 
+
+-->
+	<header>
+
+		<nav class="row navbar">
+			<div class="col s2 menu">
+				<!-- Dropdown Trigger -->
+				<div class="hidden"><h6 id="menu-id">Menu</h6></div>
+				<a id="menu-icon" class='dropdown-button btn icon-btn' href='#' data-activates='menu-dropdown'>
+					<img src="img/icon_menu.png" alt="hamburger" />
+				</a>
+
+				<!--<a class='dropdown-button btn icon-btn' href='#' data-activates='dropdown1'>
+					<img src="img/icon_login.png" alt="hamburger" />
+				</a>-->
+
+				<!-- Dropdown Structure -->
+				<ul id='menu-dropdown' class='dropdown-content'>
+					<li><a class="dropdown-constant" href="index.html">Home</a></li>
+					<li><a class="dropdown-constant" href="about-us.html">Who we are</a></li>
+					<li><a class="dropdown-constant" href="products.html">Our Products</a></li>
+					<!--
+					<li><a class="nest-trigger" href="products.html">Our Products</a></li>
+					<li class="nest-dropdown">
+						<ul>
+							<li><a href="#!">Interactive Business Suite</a></li>
+							<li><a href="#!">Interactive Educational Suite</a></li>
+							<li><a href="#!">Interactive Travel Suite</a></li>
+							<li><a href="#!">Reductions and Markdown Suite</a></li>
+							<li><a href="#!">Multi-purpose Admittance Card</a></li>
+						</ul>
+					</li>
+					-->
+					<li><a class="dropdown-constant" href="membership.html">Membership Perks</a></li>
+					<li><a class="dropdown-constant" href="#site-map">Contact Us</a></li>
+					<li class="dropdown-form-container">
+						<h6>Sign In to Your Account</h6>
+						<form id="form-signin" class="dropdown-form" action="#">
+							<fieldset>
+								<input class="full-width" id="username-form-signin" type="text" name="username" placeholder="Username or Email" required/>
+								<input class="full-width" id="password-form-signin" type="text" name="password" placeholder="Password" required/>
+								<span class="half-width right remember">
+									<input type="checkbox" name="remember" placeholder="Remember" value="remember" checked>
+									<span>Remember Me</span>
+								</span>
+								<input class="half-width" id="submit-form-signin" type="submit" name="name" value="Login Now"/>
+							</fieldset>
+						</form>
+					</li>
+					<li class="dropdown-subtext"><a href="#!">Lost your password?</a></li>
+					<li class="dropdown-subtext"><a id="register" href="#!">Register Now</a></li>
+				</ul>
+
+				<a href="#!" class="close-button">
+					<img src="img/icon-close-btn.png" alt="" />
+				</a>
+
+
+			</div>
+			<div class="col s8 logo">
+				<a href="#"><img src="img/logo_1ingress.jpg" alt="1ingress" /></a>
+			</div>
+			<div id="display-name" class="col s12 m2 menu">
+				<!--<p>Hi, Someone</p>-->
+			</div>
+		</nav>
+
+<!-- Sign In/Sign Up Forms (can be built with REACT)-->
+
+		<div id="login-modal" class="modal bottom-sheet">
+			<div class="modal-content">
+				
+				<form id="form-signin" class="sign-form" action="#">
+					<fieldset>
+						<input class="full-width" id="username-form-signin" type="text" name="username" placeholder="Username" required/>
+						<input class="full-width" id="password-form-signin" type="text" name="password" placeholder="Password" required/>
+						<input class="full-width" id="submit-form-signin" type="submit" name="name" value="Sign In"/>
+					</fieldset>
+				</form>
+				<form id="form-signup" class="sign-form" action="#">
+					<fieldset>
+						<input class="full-width" id="name-form-signup" type="text" name="name" placeholder="Full name" required/>
+						<input class="half-width input-left" id="email-form-signup" type="text" name="email" placeholder="Email address" required/>
+						<input class="half-width input-right" id="password-form-signup" type="text" name="password" placeholder="Password" required/>
+						<input class="full-width" id="submit-form-signup" type="submit" name="name" value="Sign up for free now"/>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<div id="black-bg"></div>
+
+	</header>
+
+<!-- End Sign In/Sign Up Forms-->
+
+<!-- end Header/NAV -->
+
+<!-- Header Image/ First Section -->
+
+	<section class="row header">
+		<div class="col s12 m8 l6">
+			<h3>Perks that go a long way.<br>A complete solution to accessing email, organizing and archiving electronic files, e-signatures, online chats, and much more!</h3>
+
+			<a class="arrow down-arrow" href="#why">
+				<img src="img/icon_arrow_down.png" alt="1INGRESS artwork" />
+			</a>
+		</div>
+	</section>
+
+<!-- End Header Image/ First Section -->
+
+
+	<section id="why" class="row section-white">
+		<div class="col s12 m12 l6 description right">
+			<h1>
+				Why Sign Up
+			</h1>
+			<h3>
+				We seek to shift consumer perception by offering the most powerful online platform existing yet.
+			</h3>
+			<div class="paragraph-right">
+				<p>
+					Most small to mid-size enterprises the marketing team only has room for handful of specialist, if any. Most do not have the budget to employ experts in all the necessary marketing mediums needed to effectively reach their target market or they don't often have enough work to justify hiring full time specialists. 
+					<br><br>
+					1Ingress Corporation engine is the first engine in the market to address these critical issues with respect to increasing enterprise's consumer base marketing efforts; providing growth and revenue in the most cost effective manner. Maximizing the understanding of multi-channel nature of the Internet is Key to successful online advertising campaigns. 
+				</p>
+			</div>
+		</div>
+		<div class="col s12 m12 l6 iphone">
+			<img src="img/artwork_iphone.jpg" alt="1ingress iPhone" />
+		</div>
+		<div class="col s12 m12 l12">
+			<div class="center">
+				<a class="arrow down-arrow" href="#what">
+					<img src="img/icon_arrow_down.png" alt="1INGRESS artwork" />
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<section id="what" class="row section-grey">
+		<div class="col s12 m12 l8 description center">
+			<h1>
+				What You Get Is More
+			</h1>
+			<h3>
+				Our marketplace is comprised of a network of businesses that can sell exclusive products or services.
+			</h3>
+		</div>
+
+<!-- Membership slider -->
+
+		<div id="membership-slider" class="col s12 m12 l12 slider-outer">
+		</div>
+
+<!-- End Membership slider -->
+
+		<div class="col s12 m12 l12">
+			<div class="center">
+				<a id="left-click" class="arrow left-arrow" href="#!">
+					<img src="img/icon_arrow_down.png" alt="1INGRESS artwork" />
+				</a>
+				<a id="right-click" class="arrow right-arrow" href="#!">
+					<img src="img/icon_arrow_down.png" alt="1INGRESS artwork" />
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<section id="plan" class="row section-white">
+		<div class="col s12 m12 l10 description center">
+			<h1>
+				Let's Talk Membership Pricing
+			</h1>
+		</div>
+		<div class="col s10 m8 l6 center membership-pricing">
+			<h6>
+				Standard Membership Plan
+			</h6>
+			<h5>$25</h5>
+			<ul>
+				<li>1GB of storage</li>
+				<li>Receive an 1Ingress email account</li>
+				<li>On-Line Chat/Teleconference</li>
+				<li>24 hour unlimited FTP access, FrontPage SOL, Gold Fusion, Active-Server pages, Secure Server Access</li>
+				<li>E-Commerce</li>
+				<li>Daily web stats</li>
+				<li>Virtual On-Line Marketing and Promotion Page (Link)</li>
+				<li>
+					<ul>
+						<li>All Networks Websites</li>
+						<li>All Entertainment Websites</li>
+						<li>All Entertainment Chat Rooms</li>
+					</ul>
+				</li>
+			</ul>
+			<div class="outer-left membership-link">
+				<div class="mid-left">
+					<a class="signup-arrow" href="#!">Sign Up</a>
+				</div>
+				<div class="mid-right icon">
+					<a class="signup-arrow" href="#!"><img class="icon-arrow" src="img/icon_blue_arrow.png" /></a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+<!-- Footer 
+
+remains the same through all HTML files 
+
+-->
+
+	<footer id="site-map" class="row">
+		<div class="col s12 m6 l3">
+			<h4>Company</h4>
+			<ul>
+				<li><a href="#!">About Us</a></li>
+				<li><a href="#!">Login</a></li>
+				<li><a href="#!">Products</a></li>
+				<li><a href="#!">Membership</a></li>
+			</ul>
+		</div>
+		<div class="col s12 m6 l3">
+			<h4>Support</h4>
+			<ul>
+				<li><a href="#!">Get Started</a></li>
+				<li><a href="#!">Contact</a></li>
+				<li><a href="#!">Documentation</a></li>
+				<li><a href="#!">Privacy &amp; Terms</a></li>
+			</ul>
+		</div>
+		<div class="col s12 m6 l3">
+			<h4>Partners and Vendors</h4>
+			<ul>
+				<li><a href="#!">Aguilar Agency</a></li>
+				<li><a href="#!">World Christian Agency</a></li>
+				<li><a href="#!">Credit Coaching</a></li>
+				<li><a href="#!">Laughlin Group</a></li>
+				<li><a href="#!">Rex Key &amp; Security</a></li>
+			</ul>
+		</div>
+		<div class="col s12 m6 l3">
+			<h4>Connect</h4>
+			<p>1 Ingress Corporation<br>1255 Treat Blvd Ste. 300<br>Walnut Creek, CA 94597<br>+1 925.800.3456<br>info@1ingress.com</p>
+		</div>
+	</footer>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+	<script type="text/javascript" src="js/scripty-min.js"></script>
+
+<!-- End Footer -->
+
+</body>
+</html>
