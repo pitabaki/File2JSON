@@ -1,15 +1,16 @@
 var fs = require('fs'),
 	path = require('path');
 
-var jsonCheck = /json$/;
+var jsonCheck = /json$/,
+	checkPath = '../node_pdf_test/output/';
 
-fs.readdir('../node_pdf_test/test/', function (err, files) {
+fs.readdir(checkPath, function (err, files) {
 	if ( err ) {
 		console.log(err);
 	}
 
 	files.forEach( function (fileName) {
-		var file = path.join(__dirname,'../node_pdf_test/test/' /* Directory Name */ , fileName);
+		var file = path.join(__dirname, checkPath /* Directory Name */ , fileName);
 
 		if (jsonCheck.test(fileName) === true) {
 			fs.readFile(file, 'utf8', function (err, contents) {
