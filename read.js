@@ -4,50 +4,16 @@ var fs = require('fs'),
 	path = require('path'),
 	PDFParser = require("pdf2json/PDFParser"),
 	url = require('url'),
-	htmlToJson = require('html-to-json/lib/htmlToJson'),
-	count = 0;
+	htmlToJson = require('html-to-json/lib/htmlToJson');
 
 var	newPath = path.join(__dirname,'/output/'), //temp relative (local). Change to permanent URL
-	oldPath = path.join(__dirname + '/input/'); //Variable for root path
+	oldPath = path.join(__dirname); //Variable for root path
 
 /*
-
-File System Watch looks for changes in directories listed above.
-
+Main Process initiates watch ()
 */
 
-fs.watch(oldPath, { persistent: true, interval: 5007 }, function(eventType, fileName) {
-	console.log(`event type is ${eventType}`);
-
-	var fileJSON = path.join(newPath, fileName.replace(/\..*/gi,".json"));
-	var file = path.join(oldPath /* Directory Name */ ,fileName);
-
-	fs.exists(file, function (exists) {
-		if (exists === true) {
-			jsonProcess(fileName);
-		} else {
-			fs.unlinkSync(fileJSON);
-		}
-		//console.log(exists);
-	});
-});
-
-/*
-Function checks file directory with remote login
-*/
-
-/*
-var exec = require('child_process').exec;
-exec("ssh berkidot@peterberkidesign.com 'ls public_html/peterberkidesign/'",
-  function (error, stdout, stderr) {
-    console.log('remote files: ' + stdout);
-	folderCleanse(newPath); //Call folder cleanse and main process
-    //mainProcess();
-}); //Because of connection time delay, functions beyond return false are read and processable
-return false;
-*/
-
-function mainProcess() {
+function mainProcess(pathy) {
 
 	/*
 
@@ -55,31 +21,52 @@ function mainProcess() {
 
 	*/
 
-	fs.readdir(oldPath/* Directory Name */, function(err,files) {
+	fs.readdir(pathy/* Directory Name */, function(err,files) {
 
 		if (err) {
 			console.log(err);
 		}
 
+		
 		files.forEach(function(fileName) {
+			var file = path.join(pathy,fileName);
+			//console.log(typeof pathy);
+			jsonProcess(file,fileName);
 
-			jsonProcess(fileName);
+		});
+	});
 
+	/*
+
+	File System Watch looks for changes in directories listed above.
+
+	*/
+
+	fs.watch(oldPath, { persistent: true, interval: 5007 }, function(eventType, fileName) {
+		console.log(`event type is ${eventType}`);
+
+		var fileJSON = path.join(newPath, fileName.replace(/\..*/gi,".json"));
+		var file = path.join(oldPath /* Directory Name */ ,fileName);
+
+		fs.exists(file, function (exists) {
+			if (exists === true) {
+				jsonProcess(fileName);
+			} else {
+				fs.unlinkSync(fileJSON);
+			}
+			//console.log(exists);
 		});
 	});
 }
 
-function jsonProcess(specFile) {
+function jsonProcess(file,specFile) {
 
+			if( specFile === undefined) {
+				return false;
+			}
 
 			var regexpHTTP = /^http/,
 			regexpHTTPS = /^https/;
-
-			if (regexpHTTP.test(oldPath) !== true && regexpHTTPS.test(oldPath) !== true) {
-				var file = path.join(oldPath /* Directory Name */ ,specFile);
-			} else {
-				var file = path.join(oldPath,specFile);
-			}
 
 			var stats = fs.statSync(file),
 				regexpPDF = /pdf$/,
@@ -88,11 +75,19 @@ function jsonProcess(specFile) {
 				regexpHTM = /htm$/,
 				regexpJSON = /json$/;
 
-
+			//Define additional key/values here. These will apply regardless of filetype
 			var birth = "\"birthTime\"\:\"" + stats.birthtime + "\"\,",
-				pathway = "\"url\"\:\"" + file + "\"\,";
+				pathway = "\"url\"\:\"" + file + "\"\,",
+				fileId = "\"name\"\:\"" + specFile.replace(/\..+/g, "") + "\"\,",
+				categorical = "\"categories\"\:\"\"\,";
+
+			var fileInfo = [birth,pathway,fileId,categorical]; //Add key/values here
 
 			if (regexpPDF.test(specFile) === true) { //process for PDFs
+
+				var typeOf = "\"type\"\:\"" + "PDF" + "\"\,"; //typeOf takes on the property PDF
+
+				fileInfo.push(typeOf);
 
 				fs.readFile(file, function(err,data) {
 
@@ -101,9 +96,10 @@ function jsonProcess(specFile) {
 					}
 
 					var	pdfParser = new PDFParser(this,1);
-					var rawJSONName = specFile.replace(".pdf",""),
+					var rawJSONName = specFile.replace(".pdf",".json"),
 						rawTextName = specFile.replace(".pdf",".txt"),
-						pdfArray = "[{";
+						pdfArray = "[{",
+						arrayText= ""; //can't leave undefined otherwise it writes undefined
 
 
 				    pdfParser.on("pdfParser_dataError", function(errData) {
@@ -113,37 +109,37 @@ function jsonProcess(specFile) {
 				    
 				    pdfParser.on("pdfParser_dataReady", function(pdfData) {
 				    	var pdfText = JSON.stringify(pdfParser.getRawTextContent());
-				    	pdfText = characterLimit(pdfText, 8000, true);
-				    	pdfText = "{" + pathway + birth + "\"content\":[" + pdfText; //creates string containing url, birth time, and content
+
+				    	console.log(pdfText);
+				    	pdfText = characterLimit(pdfText, 8000, true); //limit characters
+
+				    	//Loop through array of meta information (defined before if/else)
+				    	fileInfo.forEach(function(val){
+				    		arrayText += val;
+				    	});
+
+				    	pdfText = "{" + arrayText + "\"content\":[" + pdfText; //creates string containing array variables and pdfText
+				    	console.log(JSON.stringify(pdfParser.getAllFieldsTypes()));
 				    	//fs.writeFile(newPath + rawJSONName + "_test.json", JSON.stringify(pdfParser.getAllFieldsTypes()));
-				        fs.writeFile(newPath + rawJSONName + ".json", pdfText);
+				        fs.writeFile(newPath + rawJSONName, pdfText);
 				    });
 
 				    pdfParser.loadPDF(file);
 
 				}); //End ReadFile
 
-			} else if ((regexpJS.test(specFile) === true) || (regexpJSON.test(specFile) === true)) {
-
-				fs.readFile(specFile, function(err,data) {
-
-					if (err) {
-						console.log(err);
-					}
-
-					//console.log(__dirname);
-
-					fs.writeFile(newPath + specFile, data, 'utf8');
-
-				});
-
 			} else if ((regexpHTML.test(specFile) === true) || (regexpHTM.test(specFile) === true)) {
+
+				var typeOf = "\"type\"\:\"" + "HTML" + "\"\,"; //typeOf takes on the property PDF
+
+				fileInfo.push(typeOf);
 
 				function dataObj(name, data) {
 					this.name = name;
 					this.data = data;
 				}
 
+				var homeURL;
 				//var homeUrl = url.parse("http://docs.aerohive.com/330000/docs/help/english/ng/Content/learning-whats-new.htm"),
 
 				//HTML Arrays
@@ -155,9 +151,7 @@ function jsonProcess(specFile) {
 
 				var rawJSONName = specFile.replace(regexpHTML, 'json');
 
-				var homeURL;
-
-				if (typeof homeURL === "undefined") { //if the url is local
+				if (homeURL === undefined) { //if the url is local
 
 					var content = fs.readFile(file, 'utf8', function(err, data) {
 						if (err) {
@@ -169,12 +163,12 @@ function jsonProcess(specFile) {
 
 
 						htmlToJson.parse(homeURL, function() {
-							this.map('p,a', function($p) {
+							this.map('p', function($p) {
 								paraArray.push($p.text().trim());
 								return $p.text();
 							});
-							this.map('h1,h2,h3,h4,h5,h6', function($hx) {
-								headingsArray.push($hx.text().trim());
+							this.map('h1,h2,h3,h4,h5,h6,a', function($hx) {
+								headingsArray.push($hx.text().trim().replace(/\"/gi, "'"));
 								return $hx.text();
 							});
 						}).done(function (items) {
@@ -182,10 +176,17 @@ function jsonProcess(specFile) {
 							headingsArray = headingsArray.join(" ");
 
 							var paragraphs = new dataObj('paraArray', paraArray),
-								headings = new dataObj('headingsArray', headingsArray);
-							comboArray.push("{" + pathway + birth + objectBuildLocal(headings) + "," + objectBuildLocal(paragraphs) + "}");
+								headings = new dataObj('headingsArray', headingsArray),
+								arrayText = "";
+
+							//Loops through meta data (defined above)
+							fileInfo.forEach(function(val){
+					    		arrayText += val;
+					    	});
+
+							comboArray.push("{" + arrayText + objectBuildLocal(headings) + "," + characterLimit(objectBuildLocal(paragraphs), 8000, false) + "}");
 							comboArray = comboArray.join("");
-							comboArray = characterLimit(comboArray, 8000, false);
+							//comboArray = characterLimit(comboArray, 8000, false);
 							fs.writeFile(newPath + rawJSONName, comboArray); //Writes JSON file
 
 						}, function (err) {
@@ -200,8 +201,13 @@ function jsonProcess(specFile) {
 
 					return false;
 
+				} else {
+
+					return false;
+					
 				}
 
+				/*
 				var parseLinks = htmlToJson.createParser(['a[href]', {
 					'text': function ($a) {
 						textArray.push($a.text().trim());
@@ -250,7 +256,7 @@ function jsonProcess(specFile) {
 					fs.writeFile(newPath + rawJSONName, comboArray); //Writes JSON file
 				}, function (err) {
 				  console.log(err);
-				});
+				}); */
 
 			}// end if/else test(html)
 }
@@ -327,8 +333,10 @@ Function limits character count
 
 String.prototype.trunc = function( n, useWordBoundary ) {
 	var isTooLong = this.length > n,
-	s_ = isTooLong ? this.substr(0,n-1) : this;
+		s_ = isTooLong ? this.substr(0,n-1) : this;
+
 	s_ = (useWordBoundary && isTooLong) ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+
 	return  isTooLong ? s_ : s_;
 };
 
@@ -351,11 +359,11 @@ function finalJSONBuild() {
 	comboArray = comboArray.replace(/\}\,\{/g,",");
 }
 
-function folderCleanse(path) {
+function folderCleanse(path,direcPath) { //For single folder processes
 
-	if ( fs.existsSync(path) ) {
+	if ( fs.existsSync(path) ) { //Checks to see path passed exists (`output` in this case)
 
-	  	var folderLength = fs.readdirSync(path).length;
+	  	var folderLength = fs.readdirSync(path).length; //Checks how many items are in that directory
 
 	  	if (folderLength > 0) {
 
@@ -364,19 +372,57 @@ function folderCleanse(path) {
 		    	fs.unlinkSync(curPath);
 	    	});
 	    	setTimeout(function() {
-	    		mainProcess(); //Runs main program after destination folder is emptied
+	    		mainProcess(direcPath); //Runs main program after destination folder is emptied
 	    	}, 500);
+
 	  	} else {
-	  		mainProcess(); //Runs main program if destination folder is empty
+
+	  		mainProcess(direcPath); //Runs main program if destination folder is empty
+
 	  	}
+
 	} else {
+
 		fs.mkdir(newPath, function(){
-			mainProcess();
+			mainProcess(direcPath);
 		});
+
 	}
     //fs.rmdirSync(path); //reinstate if you're looking to delete the folder
 }
 
-folderCleanse(newPath); //Call folder cleanse and main process
+/*
+
+Function reads directory.json file and spits out directory listing
+
+*/
+
+function jsonDirectory(file) { //parse JSON based directory
+
+	var pathy = fs.readFileSync(file,'utf8');
+	var jsonContent = JSON.parse(pathy);
+
+	jsonContent.forEach(function(paths){
+		mainProcess(paths.path);
+	});
+}
+
+/*
+
+Function checks if output directory exists. If not, output directory will be created
+
+*/
+
+function outputCheck(file) {
+	if (fs.existsSync(newPath)) {
+		jsonDirectory(file); //reads json file after assessing output directory exists
+	} else {
+		fs.mkdir(newPath, function(){
+			jsonDirectory(file); //reads json file after creating output directory
+		})
+	}
+}
+
+outputCheck('directory_listing.json');
 
 return false;
