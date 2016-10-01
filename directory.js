@@ -11,7 +11,10 @@ Build out directory listing
 
 var fs = require('fs'),
 	path = require('path'),
-	execFile = require('child_process').execFile;
+	url = require('url'),
+	execFile = require('child_process').execFile,
+	http = require('http'),
+	subList = require('sublist.json')
 
 var oldPath = path.join(__dirname); //Variable for root path
 
@@ -38,9 +41,10 @@ function directoryList(pathy) {
 					newOldPath = path.join(newPath,fileName),
 					gitTest = /git$/,
 					nodeModTest = /node\_modules/,
-					outputTest = /Output/;
+					outputTest = /Output/,
+					webcastTest = /webcast/gi;
 
-				if ((directoryCheck === true) && (fileName.length > 0) && (outputTest.test(newOldPath) === false) && (gitTest.test(newOldPath) === false) && (nodeModTest.test(newOldPath) === false)){
+				if ((directoryCheck === true) && (fileName.length > 0)&& (webcastTest.test(newOldPath) === false) && (outputTest.test(newOldPath) === false) && (gitTest.test(newOldPath) === false) && (nodeModTest.test(newOldPath) === false)){
 					directoryList(newOldPath);
 					directoryListing.push("{\"path\":\"" + newOldPath + "\"}");
 					//console.log(directoryListing);
@@ -49,6 +53,7 @@ function directoryList(pathy) {
 			}); // End files foreach
 		}
 		setTimeout( function() {
+			//directoryObj += "{\"path\":\"" + "/home/wwwaeroh/public_html/330000/docs/guides" + "\"},";
 			for ( var n = 0; n < directoryListing.length; n++) {
 				if (n !== directoryListing.length - 1) {
 					directoryObj += directoryListing[n] + ",";

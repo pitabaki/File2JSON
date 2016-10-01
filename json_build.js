@@ -97,8 +97,8 @@ function jsonProcess(file,specFile) {
 
 			//Define additional key/values here. These will apply regardless of filetype
 			var birth = "\"birthTime\"\:\"" + stats.birthtime + "\"\,",
-				pathway = "\"url\"\:\"" + file + "\"\,",
-				imgPath = "\"img\"\:\"" + file + "\"\,",
+				pathway = "\"url\"\:\"" + file.replace(file.substr(0, file.indexOf("330000")),"http://docs.aerohive.com/") + "\"\,",
+				imgPath = "\"img\"\:\"" + file.replace(file.substr(0, file.indexOf("330000")),"http://docs.aerohive.com/") + "\"\,",
 				fileId = "\"name\"\:\"" + specFile.replace(/\..+/g, "") + "\"\,",
 				categorical = "\"categories\"\:\"\"\,",
 				recordOrganizer = "\"record_organizer\"\:\"" + Math.round(Math.random() * 1000000000) + "\"\,",
@@ -137,9 +137,6 @@ function jsonProcess(file,specFile) {
 				    		pdfRawData = JSON.stringify(pdfData),
 				    		tempArray = [];
 
-
-				    	fs.writeFile(newPath + 'pdfTest.json', pdfRawData); // Remove with footer issues has been fixed
-
 				    	var heads = JSON.parse(pdfHeaders);
 
 				    	for (var key in heads) {
@@ -148,7 +145,11 @@ function jsonProcess(file,specFile) {
 
 				    	headerArray = headerArray.join(""); //concatenates headerArray into a single string
 
-				    	pdfText = pdfCharLimit(pdfText, 400, 6000); //limit characters
+				    	var docSummary = pdfCharLimit(pdfText, 400, false); //limit characters
+
+				    	fileInfo.push(docSummary);
+
+				    	pdfText = pdfCharLimit(pdfText, 400, 1000); //limit characters
 
 
 				    	//Loop through array of meta information (defined before if/else)
@@ -168,8 +169,8 @@ function jsonProcess(file,specFile) {
 
 				    		}
 				    	}
-
-				    	pdfFinalArray.push(tempArray.join(""));
+				    	fs.writeFile(newPath + rawJSONName, tempArray.join(""));
+				    	//pdfFinalArray.push(tempArray.join(""));
 
 				    });
 
@@ -244,7 +245,6 @@ function jsonProcess(file,specFile) {
 									if (paraArray[n].length >= 100 && count === 0) {
 										docSummary += exCharRemoval(paraArray[n]).trunc(400,true); 
 										docSummary += "\"\,";
-										console.log(docSummary);
 										fileInfo.push(docSummary);
 										count++;
 									}
@@ -344,57 +344,6 @@ function jsonProcess(file,specFile) {
 
 				}
 
-				/*
-				var parseLinks = htmlToJson.createParser(['a[href]', {
-					'text': function ($a) {
-						textArray.push($a.text().trim());
-						return $a.text().trim();
-					},
-					'href': function ($a) {
-						return url.resolve(homeUrl, $a.attr('href'));
-					},
-					'paragraph' : function () {
-						return this.get('href').then(function (href) {
-							var parsedUrl = url.parse(href);
-
-							if (parsedUrl.protocol === 'http:' && parsedUrl.hostname === homeUrl.hostname) {
-								paraArray.push(parseParagraphs.request(href));
-								return parseParagraphs.request(href);
-							} else {
-								return null;
-							}
-						});
-					},
-					'headings': function () {
-						return this.get('href').then(function (href) {
-							var parsedUrl = url.parse(href);
-
-							// Only bother Prolific's server for this example
-							if (parsedUrl.protocol === 'http:' && parsedUrl.hostname === homeUrl.hostname) {
-								headingsArray.push(parseHeadings.request(href));
-								return parseHeadings.request(href);
-							} else {
-								return null;
-							}
-						});
-					}
-				}]);
-
-				var parseParagraphs = htmlToJson.createParser(['p,a', function ($p) {
-				  return $p.text().trim();
-				}]);
-
-				var parseHeadings = htmlToJson.createParser(['h1,h2,h3,h4,h5,h6', function ($hx) {
-				  return $hx.text().trim();
-				}]);
-
-				parseLinks.request(url.format(homeUrl)).done(function (links) {
-					finalJSONBuild();
-					fs.writeFile(newPath + rawJSONName, comboArray); //Writes JSON file
-				}, function (err) {
-				  console.log(err);
-				}); */
-
 			} // end if/else test(html)
 }
 
@@ -402,8 +351,8 @@ setTimeout(function() {
 
 	finalPrint(htmlFinalArray, 'htmlArray.json'); //function to generate html json file
 	finalPrint(pdfFinalArray, 'pdfArray.json'); //function to generate pdf json file
-	
-}, 5000);
+
+}, 50000);
 
 function finalPrint(array, filename) {
 	var tempArray = [];
@@ -435,30 +384,62 @@ function pdfCharLimit(text, length, secondLength) {
 	var pdfCharArray = [],
 		startLength = text.length;
 
-	while (text.length > 0) { // loop through entire document
+	if (secondLength !== false) {
+		while (text.length > 0) { // loop through entire document
 
-		if (text.length === startLength) { //
+			if (text.length === startLength) {
 
-			var tempText = text.trunc(length, true).replace(/\"/, "");
-			pdfCharArray.push(tempText);
-			text = text.replace(text.trunc(length, true), "");
+				var tempText = text.trunc(length, true).replace(/\"/, "");
+				tempText = pdfSummaryGenerator(tempText, "Rev");
+				tempText = pdfSummaryGenerator(tempText, "\\r\\n");
+				pdfCharArray.push(tempText);
+				text = text.replace(text.trunc(length, true), "");
 
-		} else { //called for every subsequent grouping of text
-			var tempText = text.trunc(secondLength, true);
-			text = text.replace(text.trunc(secondLength, true), "");
+			} else { //called for every subsequent grouping of text
 
-			for (var n = 0; n < 2; n++) {
+				//console.log("checking");
+				var tempText = text.trunc(secondLength * 4, true);
+				text = text.replace(text.trunc(secondLength * 4, true), "");
+				//tempText = "";
+				//text = "";
+
 				var tempString = "";
-				tempString = tempText.replace(articles, " "); //Removes articles and other extraneous characters
-				tempString = tempString.replace(nonRoman, ""); //Removes non-Roman characters (Kanji inherited from formatting)
-				tempText = tempString;
+
+				for (var n = 0; n < 3; n++) {
+					//tempString = tempText.replace(/.+/, ""); //Removes articles and other extraneous characters
+					tempString = tempText.replace(articles, " "); //Removes articles and other extraneous characters
+					tempString = tempString.replace(nonRoman, ""); //Removes non-Roman characters (Kanji inherited from formatting)
+					tempString = tempString.replace(/\./g, ""); //Removes articles and other extraneous characters
+				}
+
+				tempText = tempString.replace(/\'/g,"'");
+				tempText = tempText.replace(/\\"/g, "");
+				pdfCharArray.push(tempText.replace(/\"/g, ""));
+				//pdfCharArray.push(tempText);
 			}
-			pdfCharArray.push(tempText.replace(/\"/, "'"));
-		}
+		}		
+	} else { //else is for the pdfSummaries
+
+		/*
+		
+		Else generates the summary of each PDF. Only runs once, so the summary should be consistent throughout the document
+
+		*/
+
+		var tempText = text.trunc(length, true).replace(/\"/, "");
+		tempText = pdfSummaryGenerator(tempText, "Rev"); //Looks for a mention of Rev (since Rev number is a constantly shifting variable, its goal is to just get rid of the text up until that point. Then, the remaining text it removes will return the documents summary, or the first paragraph of text)
+		tempText = pdfSummaryGenerator(tempText, "\\r\\n");
+		var docSummary = "\"summary\"\:\"" + tempText + "\"\,"; //Adds object information
+		return docSummary; //stops program and returns the doc summary
 	}
 
-	return pdfCharArray;
+	return pdfCharArray; //returns the array after the document has been recorded
 
+}
+
+function pdfSummaryGenerator(str, variable) {
+	str = str.replace(str.substr(0, str.indexOf(variable) + variable.length), "");
+	return str;
 }
 /*
 

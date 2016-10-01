@@ -9,10 +9,11 @@
   "author": "Peter Berki",
   "license": "ISC",
   "dependencies": {
-    "algoliasearch": "^3.18.0",
+    "algoliasearch": "^3.18.1",
     "gulp": "*",
     "html-to-json": "*",
-    "pdf2json": "^1.1.6"
+    "pdf2json": "^1.1.7",
+    "youtube-api": "*"
   },
   "directories": {
     "test": "input"

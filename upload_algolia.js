@@ -14,13 +14,28 @@ var fs = require('fs'),
 var algoliasearch = require('algoliasearch');
 
 
-var client = algoliasearch();
-var index = client.initIndex('htmlDocuments');
-var htmlDocs = require('./algolia_json/pdfArray.json');
+var client = algoliasearch('', '');
+var htmlIndex = client.initIndex('htmlDocuments');
+var pdfIndex = client.initIndex('pdfDocuments');
+var htmlDocs = require('./algolia_json/htmlArray.json');
+var pdfDocs = require('./algolia_json/pdfArray.json');
 
-index.addObjects(htmlDocs, function (err, content) {
-	if (err) {
-		console.log(err);
+var jsonArray = [htmlDocs,pdfDocs];
+
+for ( var n = 0; n < jsonArray.length; n++ ) {
+	if (jsonArray[n] === htmlDocs) {
+		htmlIndex.addObjects(htmlDocs, function (err, content) {
+			if (err) {
+				console.log(err);
+			}
+		  //console.log(err, content);
+		});
+	} else if (jsonArray[n] === pdfDocs) {
+		pdfIndex.addObjects(pdfDocs, function (err, content) {
+			if (err) {
+				console.log(err);
+			}
+		  //console.log(err, content);
+		});
 	}
-  //console.log(err, content);
-});
+}
