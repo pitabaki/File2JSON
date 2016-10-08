@@ -12,6 +12,7 @@ Generate JSON files from HTML/PDF documents
 var fs = require('fs'),
 	path = require('path'),
 	PDFParser = require("pdf2json/pdfparser"),
+	execFile = require('child_process').execFile,
 	url = require('url'),
 	htmlToJson = require('html-to-json/lib/htmlToJson');
 
@@ -35,20 +36,25 @@ function mainProcess(pathy) {
 
 	*/
 
-	fs.readdir(pathy/* Directory Name */, function(err,files) {
+	if (fs.existsSync(pathy)) { //Checks if the path that's passed is valid. If not, that path is ignored
 
-		if (err) {
-			console.log(err);
-		}
+		fs.readdir(pathy/* Directory Name */, function(err,files) {
 
-		
-		files.forEach(function(fileName) {
-			var file = path.join(pathy,fileName);
-			//console.log(typeof pathy);
-			jsonProcess(file,fileName);
+			if (err) {
+				console.log(err);
+			}
 
+			
+			files.forEach(function(fileName) {
+				var file = path.join(pathy,fileName);
+				//console.log(typeof pathy);
+				jsonProcess(file,fileName);
+
+			});
 		});
-	});
+	}
+
+
 
 	/*
 
@@ -351,6 +357,12 @@ setTimeout(function() {
 
 	finalPrint(htmlFinalArray, 'htmlArray.json'); //function to generate html json file
 	finalPrint(pdfFinalArray, 'pdfArray.json'); //function to generate pdf json file
+	var child = execFile('node', ['pdfArray_gen.js'], function (err, stdout, stderr) {
+		if (err) {
+			console.log(err);
+		}
+		console.log(stdout);
+	});
 
 }, 50000);
 
@@ -643,6 +655,6 @@ function outputCheck(file) {
 	}
 }
 
-outputCheck('directory_listing.json');
+outputCheck('support/directory_listing.json');
 
 return false;

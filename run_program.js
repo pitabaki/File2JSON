@@ -14,7 +14,7 @@ var fs = require('fs'),
 	url = require('url'),
 	execFile = require('child_process').execFile,
 	http = require('http'),
-	subList = require('sublist.json')
+	subList = require('./support/sublist.json');
 
 var oldPath = path.join(__dirname); //Variable for root path
 
@@ -53,6 +53,9 @@ function directoryList(pathy) {
 			}); // End files foreach
 		}
 		setTimeout( function() {
+			subList.forEach( function(path) {
+				directoryObj += "{\"path\":\"" + path.path + "\"},";
+			});
 			//directoryObj += "{\"path\":\"" + "/home/wwwaeroh/public_html/330000/docs/guides" + "\"},";
 			for ( var n = 0; n < directoryListing.length; n++) {
 				if (n !== directoryListing.length - 1) {
@@ -61,15 +64,15 @@ function directoryList(pathy) {
 					directoryObj += directoryListing[n] + "]";
 				}
 			}
-			fs.writeFile(__dirname + "/directory_listing.json", directoryObj);
-			/*setTimeout( function() {
-				var child = execFile('node', ['read_alt.js'], function (err, stdout, stderr) {
+			fs.writeFile(__dirname + "/support/directory_listing.json", directoryObj);
+			setTimeout( function() {
+				var child = execFile('node', ['json_build.js'], function (err, stdout, stderr) {
 					if (err) {
 						console.log(err);
 					}
 					console.log(stdout);
 				});
-			}, 5000);*/
+			}, 5000);
 		}, 5000);
 			
 	}); // End readdir

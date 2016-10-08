@@ -3,7 +3,7 @@ var fs = require('fs'),
 
 var algoliasearch = require('algoliasearch');
 
-var client = algoliasearch('51I26W6FEW', 'b9288eb5a9b8a6eb05dc87825f016451');
+var client = algoliasearch('', '');
 var index = client.initIndex('htmlDocuments');
 
 // only query string

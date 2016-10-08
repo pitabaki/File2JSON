@@ -15,7 +15,7 @@ var algoliasearch = require('algoliasearch');
 
 var ghost = 'pdfDocuments';
 
-var client = algoliasearch('GY9XMM690E', '6c40ab2b58fd9ae5fd9fcbbf4c6232f9');
+var client = algoliasearch('', '');
 var index = client.initIndex(ghost);
 var pdfDocs = require('./algolia_json/pdfArray.json');
 

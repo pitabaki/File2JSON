@@ -11,8 +11,8 @@ fs.readdir(pathy, function (err, files) {
 	}
 
 	files.forEach(function (fileName) {
-		var exHTML = /htmlArray.json/,
-			exPDF = /pdfArray.json/;
+		var exHTML = /htmlArray/,
+			exPDF = /pdfArray/;
 
 		if (exHTML.test(fileName) === false && exPDF.test(fileName) === false) {
 			var file = path.join(pathy,fileName);
@@ -27,6 +27,7 @@ fs.readdir(pathy, function (err, files) {
 				} else {
 					pdfArray.push("," + content);
 				}
+				fs.unlinkSync(file);
 
 				setTimeout(function() {
 					pdfInfo = pdfArray.join("");
